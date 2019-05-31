@@ -54,3 +54,16 @@ for i in range(0,dstHeight):
 
 cv.imshow("dst",dstimg)
 cv.waitKey(0)
+
+
+
+#图片移位
+img = cv.imread("D:\img9.jpg",1)
+cv.imshow("src",img)
+imginfo = img.shape
+height = imginfo[0]
+width = imginfo[1]
+matfloat = np.float32([[1,0,100],[0,1,200]])  #设置偏移量
+dst = cv.warpAffine(img,matfloat,(height,width))
+cv.imshow("new",dst)
+cv.waitKey(0)
