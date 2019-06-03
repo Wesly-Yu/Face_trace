@@ -118,3 +118,14 @@ cv.imshow("src",img)
 dst = cv.GaussianBlur(img,(5,5),1.5)
 cv.imshow('dst',dst)
 cv.waitKey(0)
+
+
+#读取视频,分解成图片
+
+cap = cv.VideoCapture("D:\\1.mkv")
+isopen = cap.isOpened
+print(isopen)
+fps = cap.get(cv.CAP_PROP_FPS)
+width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+print(fps,width,height)
