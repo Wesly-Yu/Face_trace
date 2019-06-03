@@ -57,7 +57,7 @@ cv.waitKey(0)
 
 
 
-#图片移位
+# 图片移位
 img = cv.imread("D:\img9.jpg",1)
 cv.imshow("src",img)
 imginfo = img.shape
@@ -66,4 +66,29 @@ width = imginfo[1]
 matfloat = np.float32([[1,0,100],[0,1,200]])  #设置偏移量
 dst = cv.warpAffine(img,matfloat,(height,width))
 cv.imshow("new",dst)
+cv.waitKey(0)
+
+
+#图片直方图均衡化rgb
+img =cv.imread("D:\hua.jpg",1)
+cv.imshow("src",img)
+(b,g,r)=cv.split(img)
+bH=cv.equalizeHist(b)
+gH=cv.equalizeHist(g)
+rH=cv.equalizeHist(r)
+result=cv.merge((bH,gH,rH))
+cv.imshow('dst',result)
+cv.waitKey(0)
+
+
+
+#图片直方图均衡化yuv
+img =cv.imread("D:\hua.jpg",1)
+cv.imshow("src",img)
+imgYUV = cv.cvtColor(img,cv.COLOR_BGR2YCrCb)
+channelYUV= cv.split(imgYUV)
+channelYUV[0]=cv.equalizeHist(channelYUV[0])
+channels = cv.merge(channelYUV)
+result = cv.cvtColor(channels,cv.COLOR_YCrCb2BGR)
+cv.imshow('dst',result)
 cv.waitKey(0)
