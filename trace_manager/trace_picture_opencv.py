@@ -92,3 +92,29 @@ channels = cv.merge(channelYUV)
 result = cv.cvtColor(channels,cv.COLOR_YCrCb2BGR)
 cv.imshow('dst',result)
 cv.waitKey(0)
+
+
+
+#美白  双边滤波
+img =cv.imread("D:\woman.jpg",1)
+cv.imshow("src",img)
+dst = cv.bilateralFilter(img,50,40,40)
+cv.imshow('dst',dst)
+cv.waitKey(0)
+
+
+#高斯均值滤波
+img =cv.imread("D:\zaodian.jpg",1)
+cv.imshow("src",img)
+dst = cv.GaussianBlur(img,(5,5),1.5)
+cv.imshow('dst',dst)
+cv.waitKey(0)
+
+
+
+#均值滤波
+img =cv.imread("D:\zaodian.jpg",1)
+cv.imshow("src",img)
+dst = cv.GaussianBlur(img,(5,5),1.5)
+cv.imshow('dst',dst)
+cv.waitKey(0)
