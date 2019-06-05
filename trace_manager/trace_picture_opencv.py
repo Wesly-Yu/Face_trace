@@ -199,8 +199,18 @@ testLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
 f1 = tf.expand_dims(testDataInput,1)  #扩大维度到3维
 f2 = tf.subtract(trainDataInput,f1)   #数据做比较
 f3 = tf.reduce_sum(tf.abs(f2),reduction_indices=2)  #数据取绝对值后累加和
-f4 = tf.negative(f3)  #取反
-f5,f6 = tf.nn.top_k(f4,k=4)  #选取f4 中最大的四个值
+f4 = tf.negative(f3)  #f3取反
+f5,f6 = tf.nn.top_k(f4,k=4)  #选取f4 中最大的四个值,f3最小的四个值
+f7 = tf.gather(trainLabelInput,f6)
+f8 = tf.reduce_sum(f7,reduction_indices=1)
+f9 = tf.argmax(f8,dimension=1)
 with tf.Session() as sess:
-
  p1=sess.run(f1,feed_dict={testDataInput:testdata[0:5]})
+ p9 = sess.run(f9,feed_dict={trainDataInput:traindata,testDataInput:testdata[0:5],trainLabelInput:trainlabel})
+ p10 = np.argmax(testlabel[0:5],axis=1)
+ print(p9.shape)
+j=0
+for i in range(0,5):
+ if p10[i] == p9[i]:
+  j+=1
+print('ac=',j*100/5)
