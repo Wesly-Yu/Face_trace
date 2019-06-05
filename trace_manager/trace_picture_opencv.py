@@ -191,9 +191,16 @@ print(traindata.shape)  #500*784  500是图片个数,784为图片宽高相乘 28
 print(trainlabel.shape) #500*10    10表示10列
 print(testdata.shape)   #5*784
 print(testlabel.shape)  #5*10
-
-
 trainDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
 trainLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
 testDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
 testLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
+#计算两张图片的距离
+f1 = tf.expand_dims(testDataInput,1)  #扩大维度到3维
+f2 = tf.subtract(trainDataInput,f1)   #数据做比较
+f3 = tf.reduce_sum(tf.abs(f2),reduction_indices=2)  #数据取绝对值后累加和
+f4 = tf.negative(f3)  #取反
+f5,f6 = tf.nn.top_k(f4,k=4)  #选取f4 中最大的四个值
+with tf.Session() as sess:
+
+ p1=sess.run(f1,feed_dict={testDataInput:testdata[0:5]})
