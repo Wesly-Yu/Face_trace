@@ -151,23 +151,23 @@ import matplotlib as plt
 # cv.waitKey(0)
 
 
-#根据身高和体重判断性别
-
-
-rand1= np.array([[155,48],[159,50],[164,53],[168,56],[172,57]])
-rand2 = np.array([[152,54],[156,56],[160,58],[172,67],[176,65]])
-label = np.array([[0],[0],[0],[0],[0],[1],[1],[1],[1],[1]])
-data = np.vstack((rand1,rand2))
-data = np.array(data,dtype='float32')
-#训练样本,svm即向量机,属性设置
-svm = cv.ml.SVM_create()     #ml:machine learning
-svm.setType(cv.ml.SVM_C_SVC)  #svm type
-svm.setKernel(cv.ml.SVM_LINEAR)  #线性内核
-svm.setC(0.01)
-#训练
-result = svm.train(data,cv.ml.ROW_SAMPLE,label)
-pt_data = np.vstack([[167,55],[162,57]])
-pt_data = np.array(pt_data,dtype='float32')
-(para1,para2)=svm.predict(pt_data)
-print(para2)
+# #根据身高和体重判断性别
+#
+#
+# rand1= np.array([[155,48],[159,50],[164,53],[168,56],[172,57]])
+# rand2 = np.array([[152,54],[156,56],[160,58],[172,67],[176,65]])
+# label = np.array([[0],[0],[0],[0],[0],[1],[1],[1],[1],[1]])
+# data = np.vstack((rand1,rand2))
+# data = np.array(data,dtype='float32')
+# #训练样本,svm即向量机,属性设置
+# svm = cv.ml.SVM_create()     #ml:machine learning
+# svm.setType(cv.ml.SVM_C_SVC)  #svm type
+# svm.setKernel(cv.ml.SVM_LINEAR)  #线性内核
+# svm.setC(0.01)
+# #训练
+# result = svm.train(data,cv.ml.ROW_SAMPLE,label)
+# pt_data = np.vstack([[167,55],[162,57]])
+# pt_data = np.array(pt_data,dtype='float32')
+# (para1,para2)=svm.predict(pt_data)
+# print(para2)
 
