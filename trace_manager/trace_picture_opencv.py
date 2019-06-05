@@ -1,10 +1,9 @@
 import cv2 as cv
 import numpy as np
 import matplotlib as plt
-
-
-
-
+import tensorflow as tf
+from  tensorflow.examples.tutorials.mnist import input_data
+from numpy import random
 #灰度直方图  统计每个像素灰度出现的概率
 
 
@@ -171,3 +170,30 @@ import matplotlib as plt
 # (para1,para2)=svm.predict(pt_data)
 # print(para2)
 
+
+#knn最近领域法，识别数字
+
+#装载数据,one_hot 表示如果有一个数据为1，别的数据就为0
+minst = input_data.read_data_sets('E:\MNIST_data',one_hot=True)
+trainNumb = 55000
+testNum = 10000
+trainsize = 500
+testsize = 5
+k=4
+#数据分解 测试标签，训练标签，测试数据，训练数据
+trainIndex = np.random.choice(trainNumb,trainsize,replace=False)
+testIndex = np.random.choice(testNum,testsize,replace=False)
+traindata = minst.train.images[trainIndex]  #训练图片
+trainlabel = minst.train.labels[trainIndex]  #训练标签
+testdata = minst.test.images[testIndex] #测试图片
+testlabel = minst.test.labels[testIndex]  #测试标签
+print(traindata.shape)  #500*784  500是图片个数,784为图片宽高相乘 28*28
+print(trainlabel.shape) #500*10    10表示10列
+print(testdata.shape)   #5*784
+print(testlabel.shape)  #5*10
+
+
+trainDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
+trainLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
+testDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
+testLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
