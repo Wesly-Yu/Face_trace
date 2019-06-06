@@ -171,46 +171,91 @@ from numpy import random
 # print(para2)
 
 
-#knn最近领域法，识别数字
+# knn最近领域法，识别数字准确率
 
-#装载数据,one_hot 表示如果有一个数据为1，别的数据就为0
-minst = input_data.read_data_sets('E:\MNIST_data',one_hot=True)
-trainNumb = 55000
-testNum = 10000
-trainsize = 500
-testsize = 5
-k=4
-#数据分解 测试标签，训练标签，测试数据，训练数据
-trainIndex = np.random.choice(trainNumb,trainsize,replace=False)
-testIndex = np.random.choice(testNum,testsize,replace=False)
-traindata = minst.train.images[trainIndex]  #训练图片
-trainlabel = minst.train.labels[trainIndex]  #训练标签
-testdata = minst.test.images[testIndex] #测试图片
-testlabel = minst.test.labels[testIndex]  #测试标签
-print(traindata.shape)  #500*784  500是图片个数,784为图片宽高相乘 28*28
-print(trainlabel.shape) #500*10    10表示10列
-print(testdata.shape)   #5*784
-print(testlabel.shape)  #5*10
-trainDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
-trainLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
-testDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
-testLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
-#计算两张图片的距离
-f1 = tf.expand_dims(testDataInput,1)  #扩大维度到3维
-f2 = tf.subtract(trainDataInput,f1)   #数据做比较
-f3 = tf.reduce_sum(tf.abs(f2),reduction_indices=2)  #数据取绝对值后累加和
-f4 = tf.negative(f3)  #f3取反
-f5,f6 = tf.nn.top_k(f4,k=4)  #选取f4 中最大的四个值,f3最小的四个值
-f7 = tf.gather(trainLabelInput,f6)
-f8 = tf.reduce_sum(f7,reduction_indices=1)
-f9 = tf.argmax(f8,dimension=1)
-with tf.Session() as sess:
- p1=sess.run(f1,feed_dict={testDataInput:testdata[0:5]})
- p9 = sess.run(f9,feed_dict={trainDataInput:traindata,testDataInput:testdata[0:5],trainLabelInput:trainlabel})
- p10 = np.argmax(testlabel[0:5],axis=1)
- print(p9.shape)
-j=0
-for i in range(0,5):
- if p10[i] == p9[i]:
-  j+=1
-print('ac=',j*100/5)
+# #装载数据,one_hot 表示如果有一个数据为1，别的数据就为0
+# minst = input_data.read_data_sets('E:\MNIST_data',one_hot=True)
+# trainNumb = 55000
+# testNum = 10000
+# trainsize = 500
+# testsize = 5
+# k=4
+# #数据分解 测试标签，训练标签，测试数据，训练数据
+# trainIndex = np.random.choice(trainNumb,trainsize,replace=False)
+# testIndex = np.random.choice(testNum,testsize,replace=False)
+# traindata = minst.train.images[trainIndex]  #训练图片
+# trainlabel = minst.train.labels[trainIndex]  #训练标签
+# testdata = minst.test.images[testIndex] #测试图片
+# testlabel = minst.test.labels[testIndex]  #测试标签
+# print(traindata.shape)  #500*784  500是图片个数,784为图片宽高相乘 28*28
+# print(trainlabel.shape) #500*10    10表示10列
+# print(testdata.shape)   #5*784
+# print(testlabel.shape)  #5*10
+# trainDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
+# trainLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
+# testDataInput = tf.placeholder(shape=[None,784],dtype=tf.float32)
+# testLabelInput = tf.placeholder(shape=[None,10],dtype=tf.float32)
+# #计算两张图片的距离
+# f1 = tf.expand_dims(testDataInput,1)  #扩大维度到3维
+# f2 = tf.subtract(trainDataInput,f1)   #数据做比较
+# f3 = tf.reduce_sum(tf.abs(f2),reduction_indices=2)  #数据取绝对值后累加和
+# f4 = tf.negative(f3)  #f3取反
+# f5,f6 = tf.nn.top_k(f4,k=4)  #选取f4 中最大的四个值,f3最小的四个值
+# f7 = tf.gather(trainLabelInput,f6)
+# f8 = tf.reduce_sum(f7,reduction_indices=1)
+# f9 = tf.argmax(f8,dimension=1)
+# with tf.Session() as sess:
+#  p1=sess.run(f1,feed_dict={testDataInput:testdata[0:5]})
+#  p9 = sess.run(f9,feed_dict={trainDataInput:traindata,testDataInput:testdata[0:5],trainLabelInput:trainlabel})
+#  p10 = np.argmax(testlabel[0:5],axis=1)
+#  print(p9.shape)
+# j=0
+# for i in range(0,5):
+#  if p10[i] == p9[i]:
+#   j+=1
+# print('ac=',j*100/5)
+
+
+#openCV生成验证码
+line_num = 10
+pic_num = 1000
+path = 'E:/images/'
+def randomcolor():
+	return (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
+
+
+def randchar():
+	return chr(np.random.randint(65,90))
+
+def randpos(x_start,x_end,y_start,y_end):
+	return (np.random.randint(x_start,x_end),
+			np.random.randint(y_start,y_end))
+
+img_height = 60
+img_width = 240
+for i in range(pic_num):
+	img_name = ""
+	#生成随机矩阵
+	img = np.random.randint(100,200,(img_height,img_width,3),np.uint8)
+	#图片过多，展示时会卡死
+	# cv.imshow("randomImg",img)
+	x_pos = 0
+	y_pos = 25
+	for j in range(4):
+		char = randchar()
+		img_name +=char
+		cv.putText(img, char,
+					(np.random.randint(x_pos, x_pos + 50), np.random.randint(y_pos, y_pos + 35)),
+					cv.FONT_HERSHEY_SIMPLEX,
+					1.5,
+					randomcolor(),
+					2)
+		x_pos+=45
+	for a in range(line_num):
+		img = cv.line(img,randpos(0,img_width,0,img_height),
+					  randpos(0,img_width,0,img_height),
+					  randomcolor(),
+					  np.random.randint(1,2))
+	cv.imwrite(path + img_name+".jpg",img)
+
+
