@@ -215,47 +215,50 @@ from numpy import random
 #   j+=1
 # print('ac=',j*100/5)
 
+#
+# #openCV生成验证码
+# line_num = 10
+# pic_num = 1000
+# path = 'E:/images/'
+# def randomcolor():
+# 	return (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
+#
+#
+# def randchar():
+# 	return chr(np.random.randint(65,90))
+#
+# def randpos(x_start,x_end,y_start,y_end):
+# 	return (np.random.randint(x_start,x_end),
+# 			np.random.randint(y_start,y_end))
+#
+# img_height = 60
+# img_width = 240
+# for i in range(pic_num):
+# 	img_name = ""
+# 	#生成随机矩阵
+# 	img = np.random.randint(100,200,(img_height,img_width,3),np.uint8)
+# 	#图片过多，展示时会卡死
+# 	# cv.imshow("randomImg",img)
+# 	x_pos = 0
+# 	y_pos = 25
+# 	for j in range(4):
+# 		char = randchar()
+# 		img_name +=char
+# 		cv.putText(img, char,
+# 					(np.random.randint(x_pos, x_pos + 50), np.random.randint(y_pos, y_pos + 35)),
+# 					cv.FONT_HERSHEY_SIMPLEX,
+# 					1.5,
+# 					randomcolor(),
+# 					2,cv.LINE_AA)
+# 		x_pos+=45
+# 	for a in range(line_num):
+# 		img = cv.line(img,randpos(0,img_width,0,img_height),
+# 					  randpos(0,img_width,0,img_height),
+# 					  randomcolor(),
+# 					  np.random.randint(1,2))
+# 	cv.imwrite(path + img_name+".jpg",img)
 
-#openCV生成验证码
-line_num = 10
-pic_num = 1000
-path = 'E:/images/'
-def randomcolor():
-	return (np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255))
 
 
-def randchar():
-	return chr(np.random.randint(65,90))
 
-def randpos(x_start,x_end,y_start,y_end):
-	return (np.random.randint(x_start,x_end),
-			np.random.randint(y_start,y_end))
-
-img_height = 60
-img_width = 240
-for i in range(pic_num):
-	img_name = ""
-	#生成随机矩阵
-	img = np.random.randint(100,200,(img_height,img_width,3),np.uint8)
-	#图片过多，展示时会卡死
-	# cv.imshow("randomImg",img)
-	x_pos = 0
-	y_pos = 25
-	for j in range(4):
-		char = randchar()
-		img_name +=char
-		cv.putText(img, char,
-					(np.random.randint(x_pos, x_pos + 50), np.random.randint(y_pos, y_pos + 35)),
-					cv.FONT_HERSHEY_SIMPLEX,
-					1.5,
-					randomcolor(),
-					2)
-		x_pos+=45
-	for a in range(line_num):
-		img = cv.line(img,randpos(0,img_width,0,img_height),
-					  randpos(0,img_width,0,img_height),
-					  randomcolor(),
-					  np.random.randint(1,2))
-	cv.imwrite(path + img_name+".jpg",img)
-
-
+#装载数据,one_hot 表示如果有一个数据为1，别的数据就为0
