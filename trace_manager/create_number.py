@@ -47,7 +47,7 @@ def draw_line(draw,width,height):
 
 def gen_captcha_text_image():
 	width,height = size
-	image = ImageCaptcha()
+	image = ImageCaptcha(width,height)
 	captcha_text = radom_captcha_text()   #list格式
 	captcha_text = ''.join(captcha_text)  #转换为string格式
 	captcha = image.generate(captcha_text)
@@ -80,16 +80,16 @@ def train_robot():
 	keep_prob = tf.placeholder(tf.float32)
 
 
+#
+# 定义cnn
+# def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
+# 	x = tf.reshape(X,shape=[-1,height,width,1])
+# 	#3层卷积神经网络
+# 	w_c1 =tf.reshape(Y,shape=)
 
-#定义cnn
-def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
-	x = tf.reshape(X,shape=[-1,height,width,1])
-	#3层卷积神经网络
-	w_c1 =
 
-
-
-def train_crack_captcha_cnn():
+#
+# def train_crack_captcha_cnn():
 
 
 
