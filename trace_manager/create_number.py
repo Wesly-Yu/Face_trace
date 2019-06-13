@@ -80,7 +80,6 @@ def vec2text(vec):
 	for i, c in enumerate(char_pos):
 		number = i % 10
 		text.append(str(number))
-
 	return "".join(text)
 
 
@@ -88,10 +87,10 @@ def vec2text(vec):
 
 
 # 定义cnn
-# def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
-# 	x = tf.reshape(X,shape=[-1,height,width,1])
-# 	#3层卷积神经网络
-# 	w_c1 =tf.reshape(Y,shape=)
+def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
+	x = tf.reshape(X,shape=[-1,height,width,1])
+	#3层卷积神经网络
+	w_c1 =tf.reshape(Y,shape=[1,2,2,1])
 
 
 #
@@ -108,16 +107,15 @@ def train_robot():
 	keep_prob = tf.placeholder(tf.float32)
 
 if __name__ == '__main__':
+	number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 	text,image = gen_captcha_text_image()
-	path  =os.path.abspath(os.path.dirname(__file__))  # 获取当前工程目录
-	image_name = text+'.png'
-	f = plt.figure()
-	ax = f.add_subplot(111)
-	ax.text(0.1,0.9,text,ha='center',va='center')   #,transform=ax.transAxes
-	plt.imshow(image)
-	plt.savefig(image_name)
-	plt.show()
-	max_captcha = len(text)  #验证码长度
+	print(image.shape)
+	print(text)
+	Image_height = 60
+	Image_width = 160
+	max_captcha = len(text)
+	char_set = number
+	char_set_len = len(number)
 
 
 
