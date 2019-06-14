@@ -108,6 +108,15 @@ def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
 	conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
 	conv3 = tf.nn.dropout(conv3, keep_prob)
 
+	#全连接层--001
+	w_d = tf.Variable(w_alpha*tf.random_normal([8*20*128,1024])) #8是height=60 进行3次卷积，每次卷积为1/2,3次之后根据SAME函数 变为8.160根据3次卷积后变为20。128为生成的特征图，1024为期望的向量
+	b_d = tf.Variable(b_alpha*tf.random_normal([1024]))
+	dense = tf.reshape(conv3,[-1,w_d.get_shape().as_list()[0]])
+	dense = tf.nn.relu(tf.add(tf.matmul(dense,w_d),b_d))
+	dense = tf.nn.dropout(dense,keep_prob)
+	# 全连接层--002
+	w_out = tf.Variable(w_alpha*tf.random_normal([1024,max_captcha*char_set_len]))
+
 #训练
 def train_crack_captcha_cnn():
 
@@ -133,8 +142,8 @@ if __name__ == '__main__':
 		max_captcha = len(text)
 		char_set = number
 		char_set_len = len(number)
-		X = tf.placeholder(tf.float32, [None, height * width])  # 计算有多少个像素点
-		Y = tf.placeholder(tf.float32, [None, max_captcha * char_set_len])  # 计算有多少位数字   4x10
+		X = tf.placeholder(tf.float32,[None, height*width])  # 计算有多少个像素点
+		Y = tf.placeholder(tf.float32,[None, max_captcha*char_set_len])  # 计算有多少位数字   4x10
 		keep_prob = tf.placeholder(tf.float32)
 
 
