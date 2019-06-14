@@ -116,9 +116,41 @@ def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
 	dense = tf.nn.dropout(dense,keep_prob)
 	# 全连接层--002
 	w_out = tf.Variable(w_alpha*tf.random_normal([1024,max_captcha*char_set_len]))
-
+	b_out = tf.Variable(b_alpha*tf.random_normal([max_captcha*char_set_len]))
+	out = tf.add(tf.matmul(dense,w_out),b_out)
+	return out
 #训练
 def train_crack_captcha_cnn():
+	output = crack_captcha_cnn()
+	loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(output, Y))  #定义损失函数,计算sigmoid的交叉熵,衡量的是分类任务中的概率误差,reduce_mean:降维或者计算tensor（图像）的平均值
+	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)    #自适应矩阵优化
+	predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN])    #定义预测函数
+	max_idx_p = tf.argmax(predict, 2)  #tf.argmax返回每行或者每列最大值的索引
+	max_idx_l = tf.argmax(tf.reshape(Y, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+	correct_pred = tf.equal(max_idx_p, max_idx_l)
+	accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))   #定义正确率,tf.cast()函数的作用是执行 tensorflow 中张量数据类型转换
+	saver = tf.train.Saver()
+	with tf.Session() as sess:
+		sess.run(tf.global_variables_initializer())
+
+		step = 0
+		while True:
+			batch_x, batch_y = get_next_batch(64)
+			_, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
+			print(step, loss_)
+
+			# 每100 step计算一次准确率
+			if step % 10 == 0:
+				batch_x_test, batch_y_test = get_next_batch(100)
+				acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
+				print(step, acc)
+				# 如果准确率大于50%,保存模型,完成训练
+				if acc > 0.970:
+					saver.save(sess, "./model/crack_capcha.model", global_step=step)
+					break
+
+			step += 1
+
 
 
 
