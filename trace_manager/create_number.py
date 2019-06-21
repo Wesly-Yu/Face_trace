@@ -123,7 +123,7 @@ def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
 def train_crack_captcha_cnn():
 	output = crack_captcha_cnn()
 	loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(output, Y))  #定义损失函数,计算sigmoid的交叉熵,衡量的是分类任务中的概率误差,reduce_mean:降维或者计算tensor（图像）的平均值
-	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)    #自适应矩阵优化
+	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)    #自适应矩阵优化,定义优化器
 	predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN])    #定义预测函数
 	max_idx_p = tf.argmax(predict, 2)  #tf.argmax返回每行或者每列最大值的索引
 	max_idx_l = tf.argmax(tf.reshape(Y, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
@@ -144,7 +144,7 @@ def train_crack_captcha_cnn():
 				batch_x_test, batch_y_test = get_next_batch(100)
 				acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
 				print(step, acc)
-				# 如果准确率大于50%,保存模型,完成训练
+				# 如果准确率大于97%,保存模型,完成训练
 				if acc > 0.970:
 					saver.save(sess, "./model/crack_capcha.model", global_step=step)
 					break
@@ -177,10 +177,6 @@ if __name__ == '__main__':
 		X = tf.placeholder(tf.float32,[None, height*width])  # 计算有多少个像素点
 		Y = tf.placeholder(tf.float32,[None, max_captcha*char_set_len])  # 计算有多少位数字   4x10
 		keep_prob = tf.placeholder(tf.float32)
-
-
-
-
 
 	else:
 		number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
