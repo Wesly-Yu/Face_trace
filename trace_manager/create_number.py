@@ -140,16 +140,38 @@ def train_crack_captcha_cnn():
 			print(step, loss_)
 
 			# 每100 step计算一次准确率
-			if step % 10 == 0:
+			if step % 100 == 0:
 				batch_x_test, batch_y_test = get_next_batch(100)
 				acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
 				print(step, acc)
 				# 如果准确率大于97%,保存模型,完成训练
-				if acc > 0.970:
+				if acc > 0.990:
 					saver.save(sess, "./model/crack_capcha.model", global_step=step)
 					break
 
 			step += 1
+
+
+
+
+# # 生成一个训练batch ：生成训练样本
+# def get_next_batch(batch_size=128):
+#     batch_x = np.zeros([batch_size, IMAGE_HEIGHT*IMAGE_WIDTH])
+#     batch_y = np.zeros([batch_size, MAX_CAPTCHA*CHAR_SET_LEN])
+# 	#判断生成的验证码图片是否符合我们的要求（60,160,3） 3表示3通道
+# 	def wrap_gen_text_image():
+# 		while True:
+# 			text, image = gen_captcha_text_image()
+# 			if image.shape == (60, 160, 3):
+# 				return text, image
+#
+# 	for i in range(batch_size):
+# 		text, image = wrap_gen_text_image()
+# 		image = convert_gray(image)
+# 		batch_x[i,:]=image.flatten()/255
+# 		batch_y[1,:]=text2vec(text)
+# 	return batch_x,batch_y
+
 
 
 
@@ -161,6 +183,28 @@ def train_robot():
 	X= tf.placeholder(tf.float32,[None,height*width])   #计算有多少个像素点
 	Y = tf.placeholder(tf.float32,[None,max_captcha*char_set_len])  #计算有多少位数字
 	keep_prob = tf.placeholder(tf.float32)
+
+
+def get_next_batch(batch_size=128):
+	batch_x = np.zeros([batch_size, IMAGE_HEIGHT * IMAGE_WIDTH])
+	batch_y = np.zeros([batch_size, MAX_CAPTCHA * CHAR_SET_LEN])
+
+	# 有时生成图像大小不是(60, 160, 3)
+	def wrap_gen_captcha_text_and_image():
+		while True:
+			text, image = gen_captcha_text_and_image()
+			if image.shape == (60, 160, 3):
+				return text, image
+
+	for i in range(batch_size):
+		text, image = wrap_gen_captcha_text_and_image()
+		image = convert2gray(image)
+
+		batch_x[i, :] = image.flatten() / 255  # (image.flatten()-128)/128  mean为0
+		batch_y[i, :] = text2vec(text)
+
+	return batch_x, batch_y
+
 
 if __name__ == '__main__':
 	train = 1
@@ -177,16 +221,41 @@ if __name__ == '__main__':
 		X = tf.placeholder(tf.float32,[None, height*width])  # 计算有多少个像素点
 		Y = tf.placeholder(tf.float32,[None, max_captcha*char_set_len])  # 计算有多少位数字   4x10
 		keep_prob = tf.placeholder(tf.float32)
-
-	else:
+		train_crack_captcha_cnn()
+	if train ==1:
 		number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-		text, image = gen_captcha_text_image()
-		print(image.shape)
-		print(text)
-		Image_height = 60
-		Image_width = 160
-		X = tf.placeholder(tf.float32, [None, height * width])  # 计算有多少个像素点
-		Y = tf.placeholder(tf.float32, [None, max_captcha * char_set_len])  # 计算有多少位数字
+		IMAGE_HEIGHT = 60
+		IMAGE_WIDTH = 160
+		char_set = number
+		CHAR_SET_LEN = len(char_set)
 
+		text, image = gen_captcha_text_and_image()
+
+		f = plt.figure()
+		ax = f.add_subplot(111)
+		ax.text(0.1, 0.9, text, ha='center', va='center', transform=ax.transAxes)
+		plt.imshow(image)
+
+		plt.show()
+
+		MAX_CAPTCHA = len(text)
+		image = convert2gray(image)
+		image = image.flatten() / 255
+
+		X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])# 计算有多少个像素点
+		Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])# 计算有多少位数字
+		keep_prob = tf.placeholder(tf.float32)  # dropout
+
+		predict_text = crack_captcha(image)
+		print("正确: {}  预测: {}".format(text, predict_text))
+		# number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+		# text, image = gen_captcha_text_image()
+		# print(image.shape)
+		# print(text)
+		# Image_height = 60
+		# Image_width = 160
+		# X = tf.placeholder(tf.float32, [None, height * width])
+		# Y = tf.placeholder(tf.float32, [None, max_captcha * char_set_len])
+		#
 
 
