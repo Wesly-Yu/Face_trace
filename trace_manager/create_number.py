@@ -102,7 +102,7 @@ def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
 	conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
 	conv2 = tf.nn.dropout(conv2, keep_prob)
 	# 3层卷积神经网络--03
-	w_c3 = tf.Variable(w_alpha * tf.random_normal([3,3,32,128]))
+	w_c3 = tf.Variable(w_alpha * tf.random_normal([3,3,64,128]))
 	b_c3 = tf.Variable(b_alpha * tf.random_normal([128]))
 	conv3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv2, w_c3, strides=[1, 1, 1, 1], padding='SAME'),b_c3))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
 	conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
@@ -185,7 +185,7 @@ def train_robot():
 	keep_prob = tf.placeholder(tf.float32)
 
 
-def get_next_batch(batch_size=128):
+def get_next_batch(batch_size=64):
 	batch_x = np.zeros([batch_size, IMAGE_HEIGHT * IMAGE_WIDTH])
 	batch_y = np.zeros([batch_size, MAX_CAPTCHA * CHAR_SET_LEN])
 
@@ -207,7 +207,7 @@ def get_next_batch(batch_size=128):
 
 
 if __name__ == '__main__':
-	train = 1
+	train = 0
 	if train == 0:
 		number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 		text,image = gen_captcha_text_image()

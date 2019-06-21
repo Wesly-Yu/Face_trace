@@ -8,7 +8,7 @@
 # print(b)
 
 
-
+#快排的实现
 def quick_sort(sort_list):
     if sort_list ==[]:
         return []
@@ -20,3 +20,6 @@ def quick_sort(sort_list):
         return less+[first]+more
 list = quick_sort([1,32,100,7,21,6,66,33,11,55,77,61])
 print(list)
+
+
+#python装饰器
