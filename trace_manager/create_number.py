@@ -136,13 +136,13 @@ def train_cnn():
 
 		step = 0
 		while True:
-			batch_x, batch_y = get_next_batch(64)
+			batch_x, batch_y = get_train_batch(64)
 			_, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
 			print(step, loss_)
 
 			# 每100 step计算一次准确率
 			if step % 100 == 0:
-				batch_x_test, batch_y_test = get_next_batch(100)
+				batch_x_test, batch_y_test = get_train_batch(100)
 				acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
 				print(step, acc)
 				# 如果准确率大于99%,保存模型,完成训练
@@ -188,7 +188,7 @@ def train_robot():
 	keep_prob = tf.placeholder(tf.float32)
 
 
-def get_next_batch(batch_size=128):
+def get_train_batch(batch_size=128):
 	batch_x = np.zeros([batch_size, IMAGE_HEIGHT * IMAGE_WIDTH])
 	batch_y = np.zeros([batch_size, MAX_CAPTCHA * CHAR_SET_LEN])
 
