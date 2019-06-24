@@ -87,7 +87,7 @@ def vec2text(vec):
 
 
 # 定义cnn
-def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
+def defin_cnn(w_alpha=0.01,b_alpha=0.1):
 	model = tf.keras.Sequential()
 	x = tf.reshape(X,shape=[-1,Image_height,Image_width,1])   #-1表示让tensorflow  自动计算batch的值,最后的1表示图像的通道数，由于已经转为灰度图像，所以通道数为1
 	#3层卷积神经网络--01
@@ -121,8 +121,8 @@ def crack_captcha_cnn(w_alpha=0.01,b_alpha=0.1):
 	out = tf.add(tf.matmul(dense,w_out),b_out)
 	return out
 #训练
-def train_captcha_cnn():
-	output = crack_captcha_cnn()
+def train_cnn():
+	output = defin_cnn()
 	loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(output, Y))  #定义损失函数,计算sigmoid的交叉熵,衡量的是分类任务中的概率误差,reduce_mean:降维或者计算tensor（图像）的平均值
 	optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)    #自适应矩阵优化,定义优化器
 	predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN])    #定义预测函数
@@ -154,27 +154,27 @@ def train_captcha_cnn():
 
 
 
-def crack_captcha_cnn():
-    model = tf.keras.Sequential()
-	#第一层神经卷积网络
-    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
-    model.add(tf.keras.layers.PReLU())
-    model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-	#第二层神经卷积网络
-    model.add(tf.keras.layers.Conv2D(64, (5, 5)))
-    model.add(tf.keras.layers.PReLU())
-    model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-	#第三层神经卷积网络
-    model.add(tf.keras.layers.Conv2D(128, (5, 5)))
-    model.add(tf.keras.layers.PReLU())
-    model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-	#连接层优化
-    model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(MAX_CAPTCHA * CHAR_SET_LEN))
-    model.add(tf.keras.layers.Reshape([MAX_CAPTCHA, CHAR_SET_LEN]))
-    model.add(tf.keras.layers.Softmax())
-
-    return model
+# def crack_captcha_cnn():
+#     model = tf.keras.Sequential()
+# 	#第一层神经卷积网络
+#     model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+#     model.add(tf.keras.layers.PReLU())
+#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
+# 	#第二层神经卷积网络
+#     model.add(tf.keras.layers.Conv2D(64, (5, 5)))
+#     model.add(tf.keras.layers.PReLU())
+#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
+# 	#第三层神经卷积网络
+#     model.add(tf.keras.layers.Conv2D(128, (5, 5)))
+#     model.add(tf.keras.layers.PReLU())
+#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
+# 	#连接层优化
+#     model.add(tf.keras.layers.Flatten())
+#     model.add(tf.keras.layers.Dense(MAX_CAPTCHA * CHAR_SET_LEN))
+#     model.add(tf.keras.layers.Reshape([MAX_CAPTCHA, CHAR_SET_LEN]))
+#     model.add(tf.keras.layers.Softmax())
+#
+#     return model
 
 
 
@@ -224,7 +224,7 @@ if __name__ == '__main__':
 		X = tf.placeholder(tf.float32,[None, height*width])  # 计算有多少个像素点
 		Y = tf.placeholder(tf.float32,[None, max_captcha*char_set_len])  # 计算有多少位数字   4x10
 		keep_prob = tf.placeholder(tf.float32)
-		train_captcha_cnn()
+		train_cnn()
 	if train ==1:
 		number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 		IMAGE_HEIGHT = 60
@@ -243,7 +243,7 @@ if __name__ == '__main__':
 
 		MAX_CAPTCHA = len(text)
 		image = convert2gray(image)
-		image = image.flatten() / 255
+		image = image.flatten() / 255   #将像素转换为0-1之间
 
 		X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])# 计算有多少个像素点
 		Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])# 计算有多少位数字
@@ -251,14 +251,6 @@ if __name__ == '__main__':
 
 		predict_text = crack_captcha(image)
 		print("正确: {}  预测: {}".format(text, predict_text))
-		# number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-		# text, image = gen_captcha_text_image()
-		# print(image.shape)
-		# print(text)
-		# Image_height = 60
-		# Image_width = 160
-		# X = tf.placeholder(tf.float32, [None, height * width])
-		# Y = tf.placeholder(tf.float32, [None, max_captcha * char_set_len])
-		#
+
 
 
