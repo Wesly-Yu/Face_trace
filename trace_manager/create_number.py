@@ -154,28 +154,15 @@ def train_cnn():
 
 
 
-# def crack_captcha_cnn():
-#     model = tf.keras.Sequential()
-# 	#第一层神经卷积网络
-#     model.add(tf.keras.layers.Conv2D(32, (3, 3)))
-#     model.add(tf.keras.layers.PReLU())
-#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-# 	#第二层神经卷积网络
-#     model.add(tf.keras.layers.Conv2D(64, (5, 5)))
-#     model.add(tf.keras.layers.PReLU())
-#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-# 	#第三层神经卷积网络
-#     model.add(tf.keras.layers.Conv2D(128, (5, 5)))
-#     model.add(tf.keras.layers.PReLU())
-#     model.add(tf.keras.layers.MaxPool2D((2, 2), strides=2))
-# 	#连接层优化
-#     model.add(tf.keras.layers.Flatten())
-#     model.add(tf.keras.layers.Dense(MAX_CAPTCHA * CHAR_SET_LEN))
-#     model.add(tf.keras.layers.Reshape([MAX_CAPTCHA, CHAR_SET_LEN]))
-#     model.add(tf.keras.layers.Softmax())
-#
-#     return model
 
+# # 声明学习率为不可训练
+# learning_rate = tf.Variable(float(learning_rate), trainable=False, dtype=tf.float32)
+# # 学习率递减操作,这里表示每次学习率变成上一次的0.9倍
+# learning_rate_decay_op = learning_rate.assign(learning_rate * 0.9)
+#
+# #训练过程中根据loss情况来执行学习率递减操作
+# if #这里设置一个需要衰减学习率的条件
+#     sess.run(learning_rate_decay_op)
 
 
 
