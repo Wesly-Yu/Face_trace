@@ -28,8 +28,8 @@ width, height = size
 def radom_captcha_text(char_set=number + alpha + Alpha, captsize=4):
     captcha_text = []
     for i in range(captsize):
-        char = random.choice(char_set)
-        captcha_text.append(char)
+        c = random.choice(char_set)
+        captcha_text.append(c)
     return captcha_text
 
 
@@ -55,60 +55,52 @@ def convert_gray(img):
     else:
         return img
 
-
 def text2vec(text):
     text_len = len(text)
     if text_len > MAX_CAPTCHA:
         raise ValueError('验证码最长4个字符')
 
     vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
-    """
-    def char2pos(c):  
-        if c =='_':  
-            k = 62  
-            return k  
-        k = ord(c)-48  
-        if k > 9:  
-            k = ord(c) - 55  
-            if k > 35:  
-                k = ord(c) - 61  
-                if k > 61:  
-                    raise ValueError('No Map')   
-        return k  
-    """
+
+    def char2pos(c):
+        if c == '_':
+            k = 62
+            return k
+        k = ord(c) - 48
+        if k > 9:
+            k = ord(c) - 55
+            if k > 35:
+                k = ord(c) - 61
+                if k > 61:
+                    raise ValueError('No Map')
+        return k
+
     for i, c in enumerate(text):
-        idx = i * CHAR_SET_LEN + int(c)
+        idx = i * CHAR_SET_LEN + char2pos(c)
         vector[idx] = 1
     return vector
 
 
 # 向量转回文本
 def vec2text(vec):
-    """
     char_pos = vec.nonzero()[0]
-    text=[]
+    text = []
     for i, c in enumerate(char_pos):
-        char_at_pos = i #c/63
+        char_at_pos = i  # c/63
         char_idx = c % CHAR_SET_LEN
         if char_idx < 10:
             char_code = char_idx + ord('0')
-        elif char_idx <36:
+        elif char_idx < 36:
             char_code = char_idx - 10 + ord('A')
         elif char_idx < 62:
-            char_code = char_idx-  36 + ord('a')
+            char_code = char_idx - 36 + ord('a')
         elif char_idx == 62:
             char_code = ord('_')
         else:
             raise ValueError('error')
         text.append(chr(char_code))
-    """
-    text = []
-    char_pos = vec.nonzero()[0]
-    for i, c in enumerate(char_pos):
-        number = i % 10
-        text.append(str(number))
-
     return "".join(text)
+
 
 
 # 定义cnn
@@ -196,13 +188,7 @@ def train_cnn():
 #     sess.run(learning_rate_decay_op)
 
 
-# def train_robot():
-# 	max_captcha = len(text)  # 验证码长度
-# 	char_set = number + alpha + Alpha
-# 	char_set_len = len(char_set)
-# 	X= tf.placeholder(tf.float32,[None,height*width])   #计算有多少个像素点
-# 	Y = tf.placeholder(tf.float32,[None,max_captcha*char_set_len])  #计算有多少位数字
-# 	keep_prob = tf.placeholder(tf.float32)
+
 
 
 def get_train_batch(batch_size=128):
@@ -255,31 +241,34 @@ if __name__ == '__main__':
     IMAGE_HEIGHT = 60
     IMAGE_WIDTH = 160
     MAX_CAPTCHA = len(text)
-    char_set = number
+    char_set = number+ alpha + Alpha+['_']
     CHAR_SET_LEN = len(number)
-    X = tf.placeholder(tf.float32, [None, height * width])  # 计算有多少个像素点
+    X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])  # 计算有多少个像素点
     Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])  # 计算有多少位数字   4x10
     keep_prob = tf.placeholder(tf.float32)
     train_cnn()
-    if train == 1:
-        number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'g', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-             'v', 'w', 'x', 'y', 'z']
-    IMAGE_HEIGHT = 60
-    IMAGE_WIDTH = 160
-    char_set = number
-    CHAR_SET_LEN = len(char_set)
-    text, image = gen_captcha_text_image()
-    f = plt.figure()
-    ax = f.add_subplot(111)
-    ax.text(0.1, 0.9, text, ha='center', va='center', transform=ax.transAxes)
-    plt.imshow(image)
-    plt.show()
-    MAX_CAPTCHA = len(text)
-    image = convert_gray(image)
-    image = image.flatten() / 255  # 将像素转换为0-1之间
-    X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])  # 计算有多少个像素点
-    Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])  # 计算有多少位数字
-    keep_prob = tf.placeholder(tf.float32)  # dropout
-    predict_text = crack_captcha(image)
-    print("正确: {}  预测: {}".format(text, predict_text))
+    # if train == 1:
+    #     number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    # alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'g', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+    #          'v', 'w', 'x', 'y', 'z']
+    # Alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'G', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+    #          'V',
+    #          'W', 'X', 'Y', 'Z']
+    # IMAGE_HEIGHT = 60
+    # IMAGE_WIDTH = 160
+    # char_set = number+ alpha + Alpha
+    # CHAR_SET_LEN = len(char_set)
+    # text, image = gen_captcha_text_image()
+    # f = plt.figure()
+    # ax = f.add_subplot(111)
+    # ax.text(0.1, 0.9, text, ha='center', va='center', transform=ax.transAxes)
+    # plt.imshow(image)
+    # plt.show()
+    # MAX_CAPTCHA = len(text)
+    # image = convert_gray(image)
+    # image = image.flatten() / 255  # 将像素转换为0-1之间
+    # X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])  # 计算有多少个像素点
+    # Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])  # 计算有多少位数字
+    # keep_prob = tf.placeholder(tf.float32)  # dropout
+    # predict_text = crack_captcha(image)
+    # print("正确: {}  预测: {}".format(text, predict_text))
