@@ -62,68 +62,53 @@ def text2vec(text):
         raise ValueError('验证码最长4个字符')
 
     vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
-
-    def char2pos(c):
-        if c == '_':
-            k = 62
-            return k
-        k = ord(c) - 48
-        if k > 9:
-            k = ord(c) - 55
-            if k > 35:
-                k = ord(c) - 61
-                if k > 61:
-                    raise ValueError('No Map')
-        return k
-
+    """
+    def char2pos(c):  
+        if c =='_':  
+            k = 62  
+            return k  
+        k = ord(c)-48  
+        if k > 9:  
+            k = ord(c) - 55  
+            if k > 35:  
+                k = ord(c) - 61  
+                if k > 61:  
+                    raise ValueError('No Map')   
+        return k  
+    """
     for i, c in enumerate(text):
-        idx = i * CHAR_SET_LEN + char2pos(c)
+        idx = i * CHAR_SET_LEN + int(c)
         vector[idx] = 1
     return vector
 
 
 # 向量转回文本
 def vec2text(vec):
+    """
     char_pos = vec.nonzero()[0]
-    text = []
+    text=[]
     for i, c in enumerate(char_pos):
-        char_at_pos = i  # c/63
+        char_at_pos = i #c/63
         char_idx = c % CHAR_SET_LEN
         if char_idx < 10:
             char_code = char_idx + ord('0')
-        elif char_idx < 36:
+        elif char_idx <36:
             char_code = char_idx - 10 + ord('A')
         elif char_idx < 62:
-            char_code = char_idx - 36 + ord('a')
+            char_code = char_idx-  36 + ord('a')
         elif char_idx == 62:
             char_code = ord('_')
         else:
             raise ValueError('error')
         text.append(chr(char_code))
+    """
+    text = []
+    char_pos = vec.nonzero()[0]
+    for i, c in enumerate(char_pos):
+        number = i % 10
+        text.append(str(number))
+
     return "".join(text)
-
-
-# def text2vec(text):
-#     text_len = len(text)
-#     if text_len > MAX_CAPTCHA:
-#         raise ValueError('验证码最长4个字符')
-#
-#     vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)  # 4x4
-#     for i, c in enumerate(text):
-#         print(type(c))
-#         idx = i * CHAR_SET_LEN + int(c)
-#         vector[idx] = 1
-#     return vector
-#
-#
-# # 向量转回文本
-# def vec2text(vec):
-#     text = []
-#     char_pos = vec.nonzero()[0]
-#     for i, c in enumerate(char_pos):
-#         number = i % 10
-#         text.append(str(number))
-#     return "".join(text)
 
 
 # 定义cnn
@@ -270,7 +255,7 @@ if __name__ == '__main__':
     IMAGE_HEIGHT = 60
     IMAGE_WIDTH = 160
     MAX_CAPTCHA = len(text)
-    char_set = number + alpha + Alpha+ ['_']
+    char_set = number
     CHAR_SET_LEN = len(number)
     X = tf.placeholder(tf.float32, [None, height * width])  # 计算有多少个像素点
     Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])  # 计算有多少位数字   4x10
@@ -282,7 +267,7 @@ if __name__ == '__main__':
              'v', 'w', 'x', 'y', 'z']
     IMAGE_HEIGHT = 60
     IMAGE_WIDTH = 160
-    char_set = number + alpha + Alpha
+    char_set = number
     CHAR_SET_LEN = len(char_set)
     text, image = gen_captcha_text_image()
     f = plt.figure()
