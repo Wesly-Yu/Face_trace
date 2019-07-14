@@ -117,7 +117,6 @@ def get_train_batch(batch_size=128):
     for i in range(batch_size):
         text, image = wrap_gen_captcha_text_and_image()
         image = convert2gray(image)
-
         batch_x[i, :] = image.flatten() / 255  # (image.flatten()-128)/128  mean为0
         batch_y[i, :] = text2vec(text)
 
@@ -126,26 +125,22 @@ def get_train_batch(batch_size=128):
 
 # 定义cnn
 def defin_cnn(w_alpha=0.01, b_alpha=0.1):
-    model = tf.keras.Sequential()
-    x = tf.reshape(X, shape=[-1, IMAGE_HEIGHT, IMAGE_WIDTH,
-                             1])  # -1表示让tensorflow  自动计算batch的值,最后的1表示图像的通道数，由于已经转为灰度图像，所以通道数为1
+    x = tf.reshape(X, shape=[-1, IMAGE_HEIGHT, IMAGE_WIDTH,1])  # -1表示让tensorflow  自动计算batch的值,最后的1表示图像的通道数，由于已经转为灰度图像，所以通道数为1
     # 3层卷积神经网络--01
-    w_c1 = tf.Variable(w_alpha * tf.random_normal([3, 3, 1, 32]))
+    w_c1 = tf.Variable(w_alpha * tf.random_normal([5, 5, 1, 32]))
     b_c1 = tf.Variable(b_alpha * tf.random_normal([32]))
-    conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(x, w_c1, strides=[1, 1, 1, 1], padding='SAME'),
-                                      b_c1))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
+    conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(x, w_c1, strides=[1, 1, 1, 1], padding='SAME'),b_c1))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
     conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
     conv1 = tf.nn.dropout(conv1, keep_prob)  # keep_prob: float类型，每个元素被保留下来的概率,dropout防止或减轻过拟合而使用的函数，它一般用在全连接层
     # 3层卷积神经网络--02
-    w_c2 = tf.Variable(w_alpha * tf.random_normal([3, 3, 32, 64]))
+    w_c2 = tf.Variable(w_alpha * tf.random_normal([5, 5, 32, 64]))
     b_c2 = tf.Variable(b_alpha * tf.random_normal([64]))
-    conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'),
-                                      b_c2))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
+    conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'),b_c2))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
     conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
     conv2 = tf.nn.dropout(conv2, keep_prob)
     # 3层卷积神经网络--03
-    w_c3 = tf.Variable(w_alpha * tf.random_normal([3, 3, 64, 128]))
-    b_c3 = tf.Variable(b_alpha * tf.random_normal([128]))
+    w_c3 = tf.Variable(w_alpha * tf.random_normal([5, 5, 64, 64]))
+    b_c3 = tf.Variable(b_alpha * tf.random_normal([64]))
     conv3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv2, w_c3, strides=[1, 1, 1, 1], padding='SAME'),
                                       b_c3))  # relu:激活函数，padding:填充算法.conv2d:2d卷积,strides = [1, stride, stride, 1]
     conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')  # 池化像素数据
@@ -153,7 +148,7 @@ def defin_cnn(w_alpha=0.01, b_alpha=0.1):
 
     # 全连接层--001
     w_d = tf.Variable(w_alpha * tf.random_normal(
-        [8 * 20 * 128, 1024]))  # 8是height=60 进行3次卷积，每次卷积为1/2,3次之后根据SAME函数 变为8.160根据3次卷积后变为20。128为生成的特征图，1024为期望的向量
+        [8*20*64,1024]))  # 8是height=60 进行3次卷积，每次卷积为1/2,3次之后根据SAME函数 变为8.160根据3次卷积后变为20。128为生成的特征图，1024为期望的向量
     b_d = tf.Variable(b_alpha * tf.random_normal([1024]))
     dense = tf.reshape(conv3, [-1, w_d.get_shape().as_list()[0]])
     dense = tf.nn.relu(tf.add(tf.matmul(dense, w_d), b_d))
@@ -168,9 +163,8 @@ def defin_cnn(w_alpha=0.01, b_alpha=0.1):
 # 训练
 def train_cnn():
     output = defin_cnn()
-    loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=output,
-                                                                  logits=Y))  # 定义损失函数,计算sigmoid的交叉熵,衡量的是分类任务中的概率误差,reduce_mean:降维或者计算tensor（图像）的平均值
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)  # 自适应矩阵优化,定义优化器
+    loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=output,logits=Y))  # 定义损失函数,计算sigmoid的交叉熵,衡量的是分类任务中的概率误差,reduce_mean:降维或者计算tensor（图像）的平均值
+    optimizer = tf.train.AdadeltaOptimizer(learning_rate=0.001).minimize(loss)  # 自适应矩阵优化,定义优化器
     predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN])  # 定义预测函数
     max_idx_p = tf.argmax(predict, 2)  # tf.argmax返回每行或者每列最大值的索引
     max_idx_l = tf.argmax(tf.reshape(Y, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
@@ -183,16 +177,16 @@ def train_cnn():
         step = 0
         while True:
             batch_x, batch_y = get_train_batch(64)
-            _, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
-            print(step, loss_)
+            _, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.5})
+            print('step:%d,loss:%f' % (step,loss_))
 
             # 每100 step计算一次准确率
-            if step % 100 == 0:
+            if step % 10 == 0:
                 batch_x_test, batch_y_test = get_train_batch(100)
-                acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
-                print(step, acc)
+                acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1})
+                print('----------------step:%d,accuracy:%f' % (step,acc))
                 # 如果准确率大于99%,保存模型,完成训练
-                if acc > 0.990:
+                if acc > 0.99:
                     saver.save(sess, "./model/crack_capcha.model", global_step=step)
                     break
 
